@@ -7,6 +7,7 @@ class WindowRenderer
 	int window_width;
 	int window_height;
     float rotationAngle;
+    float rotationAngleOld;
     sf::Vector2f position;
 
 	public : WindowRenderer(int w, int h) {
@@ -17,11 +18,11 @@ class WindowRenderer
 	public : void RunTheGame() {
         sf::RenderWindow window(sf::VideoMode(window_width, window_height), "SFML works!");
 
-        sf::RectangleShape square(sf::Vector2f(50.f, 50.f));
+        sf::RectangleShape square(sf::Vector2f(150.f, 150.f));
         square.setFillColor(sf::Color::Green);
         square.setPosition(375.f, 275.f);
 
-        float movementSpeed = 0.5;
+        float movementSpeed = 1.5;
 
         sf::RectangleShape topLine(sf::Vector2f(window_width, 15.f));   
         topLine.setPosition(0.f, 0.f);
@@ -41,7 +42,6 @@ class WindowRenderer
 
         while (window.isOpen()) //прибити до тіків
         {
-
             sf::Event event;
             while (window.pollEvent(event))
             {
@@ -49,13 +49,15 @@ class WindowRenderer
                     window.close();
                 if (event.type == sf::Event::MouseWheelScrolled) {
                     if (event.mouseWheelScroll.delta > 0) {
-                        rotationAngle += 15.f; 
+                        rotationAngle += 5.f; 
                     }
                     else if (event.mouseWheelScroll.delta < 0) {
-                        rotationAngle -= 15.f; 
+                        rotationAngle -= 5.f; 
                     }
                 }
             }
+
+            square.setRotation(rotationAngle);
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
                 square.move(0.f, -movementSpeed);
@@ -69,8 +71,7 @@ class WindowRenderer
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
                 square.move(movementSpeed, 0.f);
             }
-
-            square.setRotation(rotationAngle);
+ 
 
             if (square.getGlobalBounds().intersects(topLine.getGlobalBounds()) ||
                 square.getGlobalBounds().intersects(bottomLine.getGlobalBounds()) ||
@@ -80,13 +81,16 @@ class WindowRenderer
                 square.setPosition(position);
                 square.setFillColor(sf::Color::Red); 
                 movementSpeed = 0.01;
+                square.setRotation(rotationAngleOld);
                 // maybe move back
             }
             else {
                 square.setFillColor(sf::Color::Green);
-                movementSpeed = 0.5;
+                movementSpeed = 0.5;        
             }
 
+            rotationAngleOld = rotationAngle;
+            rotationAngle = square.getRotation();  
             position = square.getPosition();
             std::cout << "Square position: (" << position.x << ", " << position.y << ")" << std::endl;
 
