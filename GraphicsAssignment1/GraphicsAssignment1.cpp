@@ -6,11 +6,12 @@
 
 int main()
 {
-    std::cout << "Hello World!\n";
+   std::cout << "Hello World!\n";
     int window_width = 1200;
     int window_height = 800;
+    WASDInputHandler wasdHandler;
 
-    WindowRenderer renderer = WindowRenderer(window_width, window_height);
+   WindowRenderer renderer = WindowRenderer(window_width, window_height, &wasdHandler);
     renderer.RunTheGame();
 
     return 0;
