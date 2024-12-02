@@ -1,11 +1,22 @@
 // GraphicsAssignment1.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include "WindowRenderer.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+   std::cout << "Hello World!\n";
+    int window_width = 1200;
+    int window_height = 800;
+    WASDInputHandler wasdHandler;
+
+   WindowRenderer renderer = WindowRenderer(window_width, window_height, &wasdHandler);
+    renderer.RunTheGame();
+
+    return 0;
+
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
