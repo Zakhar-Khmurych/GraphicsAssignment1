@@ -2,6 +2,7 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "TextureManager.h"
 
 class Frame {
     sf::RectangleShape topLine;
@@ -11,21 +12,30 @@ class Frame {
 
 public:
     Frame(int windowWidth, int windowHeight) {
-        topLine.setSize(sf::Vector2f(windowWidth, 15.f));
+        topLine.setSize(sf::Vector2f(windowWidth, 75.f));
         topLine.setPosition(0.f, 0.f);
         topLine.setFillColor(sf::Color::Yellow);
 
-        bottomLine.setSize(sf::Vector2f(windowWidth, 15.f));
-        bottomLine.setPosition(0.f, windowHeight - 15.f);
+        bottomLine.setSize(sf::Vector2f(windowWidth, 75.f));
+        bottomLine.setPosition(0.f, windowHeight - 75.f);
         bottomLine.setFillColor(sf::Color::Yellow);
 
-        leftLine.setSize(sf::Vector2f(15.f, windowHeight));
+        leftLine.setSize(sf::Vector2f(75.f, windowHeight));
         leftLine.setPosition(0.f, 0.f);
         leftLine.setFillColor(sf::Color::Yellow);
 
-        rightLine.setSize(sf::Vector2f(15.f, windowHeight));
-        rightLine.setPosition(windowWidth - 15.f, 0.f);
+        rightLine.setSize(sf::Vector2f(75.f, windowHeight));
+        rightLine.setPosition(windowWidth - 75.f, 0.f);
         rightLine.setFillColor(sf::Color::Yellow);
+    }
+
+    void setTexture(sf::Texture* texture) { // я це потім перепишу
+        if (texture) {
+            topLine.setTexture(texture);
+            bottomLine.setTexture(texture);
+            leftLine.setTexture(texture);
+            rightLine.setTexture(texture);
+        }
     }
 
     void draw(sf::RenderWindow& window) {
@@ -59,12 +69,23 @@ private:
     float movementSpeed;
     float rotationSpeed;
 
+    TextureManager textureManager;
+
+
 public:
     Square(sf::Vector2f size, sf::Vector2f startPosition, float moveSpeed, float rotateSpeed)
         : rotationAngle(0.f), position(startPosition), movementSpeed(moveSpeed), rotationSpeed(rotateSpeed) {
         squareShape.setSize(size);
         squareShape.setFillColor(sf::Color::Green);
         squareShape.setPosition(startPosition);
+    }
+
+    sf::Texture* texture = textureManager.getTexture("exampleTexture");
+
+    void setTexture(sf::Texture* texture) {
+        if (texture) {
+            squareShape.setTexture(texture);
+        }
     }
 
     void move(float dx, float dy, float deltaTime) {

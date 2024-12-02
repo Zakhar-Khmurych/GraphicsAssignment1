@@ -2,7 +2,9 @@
 
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Frame.h"
 
 // to do list
@@ -65,57 +67,9 @@ public:
     }
 };
 
-/*
-auto dispatch_input(sf::RenderWindow &window) -> input_type
-{
-    sf::Event out_event;
-    if (!window.pollEvent(out_event))
-    {
-        return input_type::none;
-    }
-
-    switch (out_event.type)
-    {
-        case sf::Event::Closed:
-            return input_type::exit;
-        case sf::Event::MouseWheelScrolled:
-            return input_type::rotate;
-        
-    }
-    while (window.pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed)
-            window.close();
-        if (event.type == sf::Event::MouseWheelScrolled) {
-            if (event.mouseWheelScroll.delta > 0) {
-                rotationAngle += 5.f;
-            }
-            else if (event.mouseWheelScroll.delta < 0) {
-                rotationAngle -= 5.f;
-            }
-        }
-    }
-
-    square.setRotation(rotationAngle);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        square.move(0.f, -movementSpeed);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        square.move(0.f, movementSpeed);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        square.move(-movementSpeed, 0.f);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        square.move(movementSpeed, 0.f);
-    }
-}
-*/
-
-
 
 class WindowRenderer {
+ 
     int window_width;
     int window_height;
     float rotationAngle;
@@ -126,137 +80,11 @@ class WindowRenderer {
     public:
         WindowRenderer(int width, int height, InputHandler* handler)
             : window_width(width), window_height(height), inputHandler(handler),
-            playerSquare(sf::Vector2f(150.f, 150.f), sf::Vector2f(375.f, 275.f), 150.f, 90.f) {}
-
-
-
-    void RunTheGame_FrameBased() {
-        sf::RenderWindow window(sf::VideoMode(window_width, window_height), "SFML works!");
-        Frame frame(window_width, window_height);
-
-        sf::RectangleShape square(sf::Vector2f(150.f, 150.f));
-        square.setFillColor(sf::Color::Green);
-        square.setPosition(375.f, 275.f);
-
-        float movementSpeed = 1.5f;
-
-        while (window.isOpen()) {
-            InputAction action = inputHandler->processInput(window);
-
-            if (action == InputAction::Exit) {
-                break;
-            }
-
-            switch (action) {
-            case InputAction::MoveUp:
-                square.move(0.f, -movementSpeed);
-                break;
-            case InputAction::MoveDown:
-                square.move(0.f, movementSpeed);
-                break;
-            case InputAction::MoveLeft:
-                square.move(-movementSpeed, 0.f);
-                break;
-            case InputAction::MoveRight:
-                square.move(movementSpeed, 0.f);
-                break;
-            case InputAction::RotateClockwise:
-                rotationAngle += 5.f;
-                break;
-            case InputAction::RotateCounterClockwise:
-                rotationAngle -= 5.f;
-                break;
-            default:
-                break;
-            }
-
-            square.setRotation(rotationAngle);
-
-            if (frame.checkCollision(square)) {
-                square.setPosition(position);
-                square.setFillColor(sf::Color::Red);
-                movementSpeed = 0.01f;
-            }
-            else {
-                square.setFillColor(sf::Color::Green);
-                movementSpeed = 1.5f;
-            }
-
-            position = square.getPosition();
-
-            window.clear();
-            frame.draw(window);
-            window.draw(square);
-            window.display();
+            playerSquare(sf::Vector2f(150.f, 150.f), sf::Vector2f(375.f, 275.f), 150.f, 90.f) 
+        {
+            LoadGame();
         }
-    }
 
-    void RunTheGame_interna () {
-        sf::RenderWindow window(sf::VideoMode(window_width, window_height), "SFML works!");
-        Frame frame(window_width, window_height);
-
-        sf::RectangleShape square(sf::Vector2f(150.f, 150.f));
-        square.setFillColor(sf::Color::Green);
-        square.setPosition(375.f, 275.f);
-
-        float movementSpeed = 450.f; 
-        float rotationSpeed = 270.f; 
-
-        sf::Clock clock; 
-
-        while (window.isOpen()) {
-            sf::Time elapsed = clock.restart(); 
-            float deltaTime = elapsed.asSeconds(); 
-
-            InputAction action = inputHandler->processInput(window);
-
-            if (action == InputAction::Exit) {
-                break;
-            }
-
-            switch (action) {
-            case InputAction::MoveUp:
-                square.move(0.f, -movementSpeed * deltaTime);
-                break;
-            case InputAction::MoveDown:
-                square.move(0.f, movementSpeed * deltaTime);
-                break;
-            case InputAction::MoveLeft:
-                square.move(-movementSpeed * deltaTime, 0.f);
-                break;
-            case InputAction::MoveRight:
-                square.move(movementSpeed * deltaTime, 0.f);
-                break;
-            case InputAction::RotateClockwise:
-                rotationAngle += rotationSpeed * deltaTime;
-                break;
-            case InputAction::RotateCounterClockwise:
-                rotationAngle -= rotationSpeed * deltaTime;
-                break;
-            default:
-                break;
-            }
-
-            square.setRotation(rotationAngle);
-
-            if (frame.checkCollision(square)) {
-                square.setPosition(position);
-                square.setFillColor(sf::Color::Red);
-                movementSpeed = 50.f; 
-            }
-            else {
-                square.setFillColor(sf::Color::Green);
-                movementSpeed = 150.f;
-            }
-
-            position = square.getPosition();
-
-            window.clear();
-            frame.draw(window);
-            window.draw(square);
-            window.display();
-        }
-    }
 
     void RunTheGame() {
         sf::RenderWindow window(sf::VideoMode(window_width, window_height), "SFML works!");
@@ -266,6 +94,31 @@ class WindowRenderer {
         sf::Vector2f previousPosition = playerSquare.getPosition();
         float previousRotation = playerSquare.getRotation();
 
+        TextureManager textureManager;
+        if (!textureManager.loadTexture("squareTexture", "Suppiluliuma.png")) {
+            std::cerr << "Failed to load texture" << std::endl;
+        }        
+        sf::Texture* Stexture = textureManager.getTexture("squareTexture");
+        if (Stexture) {
+            playerSquare.setTexture(Stexture);
+        }
+        if (!textureManager.loadTexture("frameTexture", "Ea-Nasir.png")) {
+            std::cerr << "Failed to load texture" << std::endl;
+        }
+        sf::Texture* Ftexture = textureManager.getTexture("frameTexture");
+        if (Ftexture) {
+            frame.setTexture(Ftexture);
+        } 
+
+
+        sf::SoundBuffer collisionBuffer;
+        if (!collisionBuffer.loadFromFile("sound.wav")) {
+            std::cerr << "Failed to load collision sound!" << std::endl;
+            return;
+        }
+        sf::Sound collisionSound;
+        collisionSound.setBuffer(collisionBuffer);
+
         while (window.isOpen()) {
             sf::Time elapsed = clock.restart();
             float deltaTime = elapsed.asSeconds();
@@ -273,6 +126,7 @@ class WindowRenderer {
             InputAction action = inputHandler->processInput(window);
 
             if (action == InputAction::Exit) {
+                SaveGame();
                 break;
             }
 
@@ -302,10 +156,11 @@ class WindowRenderer {
                 break;
             }
 
-            if (frame.checkCollision(playerSquare.getBounds())) {
+            if (frame.checkCollision(playerSquare.getBounds())) { //use vector collidables for collisions with whatever
                 playerSquare.setPosition(previousPosition);
                 playerSquare.setRotation(previousRotation);
                 playerSquare.setFillColor(sf::Color::Red);
+                collisionSound.play();
             }
             else {
                 playerSquare.setFillColor(sf::Color::Green);
@@ -317,6 +172,36 @@ class WindowRenderer {
             window.display();
         }
     }
+
+    void SaveGame() {
+        std::ofstream saveFile("savegame.txt");
+        if (saveFile.is_open()) {
+            sf::Vector2f pos = playerSquare.getPosition();
+            float rotation = playerSquare.getRotation();
+            saveFile << pos.x << ";" << pos.y << ";" << rotation << "\n";
+            saveFile.close();
+        }
+        else {
+            std::cerr << "Failed to open save file for writing!" << std::endl;
+        }
+    }
+
+    void LoadGame() {
+        std::ifstream saveFile("savegame.txt");
+        if (saveFile.is_open()) {
+            float x, y, rotation;
+            char separator;
+            if (saveFile >> x >> separator >> y >> separator >> rotation) {
+                playerSquare.setPosition(sf::Vector2f(x, y));
+                playerSquare.setRotation(rotation);
+            }
+            saveFile.close();
+        }
+        else {
+            std::cerr << "No save file found, starting with default position." << std::endl;
+        }
+    }
+
 
 };
 

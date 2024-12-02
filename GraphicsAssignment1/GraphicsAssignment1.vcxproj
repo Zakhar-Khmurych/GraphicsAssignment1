@@ -155,10 +155,12 @@
   <ItemGroup>
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="GraphicsAssignment1.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="WindowRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Frame.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="WindowRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
